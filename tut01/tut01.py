@@ -1,14 +1,12 @@
 def octact_identification(mod=5000):
-###Code
+    print('a')
 
+#importing pandas
+import pandas as pd 
 
-from platform import python_version
-ver = python_version()
+#reading the input file
+df = pd.read_csv("octant_input.csv") 
 
-if ver == "3.8.10":
-    print("Correct Version Installed")
-else:
-    print("Please install 3.8.10. Instruction are present in the GitHub Repo/Webmail. Url: https://pastebin.com/nvibxmjw")
 
 mod=5000
 octact_identification(mod)
