@@ -1,3 +1,5 @@
+#SIDDHARTH TIWARI 2001CE59
+
 #function for categorizing the data into different octant 
 def oct(x,y,z):
     if x>0:
@@ -45,7 +47,14 @@ df['W-w_avg']=df['W']-df.at[0,'w_avg']
 #applying the function made to categorize the data using .apply function
 df['octant'] = df.apply(lambda x: oct(x['U-u_avg'], x['V-v_avg'], x['W-w_avg']),axis=1)
 
+#ounting overall using value_counts function
+df.at[0,'octant ID'] = 'overall count'
+df.at[0,'-1'] = df['octant'].value_counts()[-1]
+df.at[0,'1']  = df['octant'].value_counts()[1]
+df.at[0,'-2'] = df['octant'].value_counts()[-2]
+df.at[0,'2']  = df['octant'].value_counts()[2]
+df.at[0,'-3'] = df['octant'].value_counts()[-3]
+df.at[0,'3'] = df['octant'].value_counts()[3]
+df.at[0,'-4'] = df['octant'].value_counts()[-4]
+df.at[0,'4'] = df['octant'].value_counts()[4]
 
-
-mod=5000
-octact_identification(mod)
