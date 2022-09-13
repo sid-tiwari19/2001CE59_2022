@@ -71,8 +71,10 @@ while(size>0):
     temp = mod
     if t == 0: #starting from value 0
         x = 0
+        t1 = str(x)
     else:
-        x = t*temp + 1 
+        x = t*temp - 1
+        t1 = str(x+1)
 
     y = t*temp+mod
     if size<mod:
@@ -80,10 +82,10 @@ while(size>0):
         size = 0
     
     #inserting range and their corresponding data
-    t1 = str(x)
+    
     t2= str(y)
     df.at[t+2,'octant ID'] = t1 +'-'+t2 
-    df1 = df.loc[x:y] 
+    df1 = df.loc[x:y-2] 
     df.at[t+2,'-1'] = df1['octant'].value_counts()[-1]
     df.at[t+2,'1']  = df1['octant'].value_counts()[1]
     df.at[t+2,'-2'] = df1['octant'].value_counts()[-2]
