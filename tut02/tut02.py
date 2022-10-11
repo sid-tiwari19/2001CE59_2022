@@ -33,3 +33,15 @@ def oct(x,y,z):
                 return -3 #when x,y,z all are negative
 
 
+#reading the input file
+df = pd.read_excel("input_octant_transition_identify.xlsx") 
+
+#data pre-prcessing:
+df.at[0,'u_avg']=df['U'].mean() 
+df.at[0,'v_avg']=df['V'].mean()
+df.at[0,'w_avg']=df['W'].mean()
+
+df['U-u_avg']=df['U']-df.at[0,'u_avg']
+df['V-v_avg']=df['V']-df.at[0,'v_avg']
+df['W-w_avg']=df['W']-df.at[0,'w_avg']
+
