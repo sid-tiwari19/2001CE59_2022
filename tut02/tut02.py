@@ -146,3 +146,61 @@ for x in range(int(len(df)/mod)+13,int(len(df)/mod)+17):
 midoriya = len(df['octant'])
 asta=1
 
+#defining a function for mod transition count
+def mod_transition_count(df,mod,hue,huehue):
+            oki=0
+            if mod*asta-1<len(df):
+                for i in range(mod*(asta-1),mod*asta-1):
+                    if df.at[i,'octant'] == hue and df.at[i+1,'octant'] ==huehue:
+                        oki = oki+1
+            else:
+                for i in range(mod*(asta-1),len(df)-1):
+                    if df.at[i,'octant'] == hue and df.at[i+1,'octant'] ==huehue:
+                        oki = oki+1
+            return oki 
+    
+mod = 5000
+#using a while loop to calculate mod transition count
+while(midoriya>0):
+   
+
+    if midoriya<mod:
+        midoriya=0
+       
+    df.at[yuno+20+14*asta,'Octant ID'] = 'Mod Transition Count'
+    df.at[yuno+21+14*asta,'Octant ID'] =  'to'
+    df.at[yuno+22+14*asta,'1']=  1
+    df.at[yuno+22+14*asta,'-1']= -1
+    df.at[yuno+22+14*asta,'2']=   2
+    df.at[yuno+22+14*asta,'-2']= -2
+    df.at[yuno+22+14*asta,'3']=   3
+    df.at[yuno+22+14*asta,'-3']= -3
+    df.at[yuno+22+14*asta,'4']=   4
+    df.at[yuno+22+14*asta,'-4']= -4
+
+    df.at[yuno+22+14*asta,'']= str(mod*(asta-1))+"-"+str(mod*asta)
+    df.at[yuno+23+14*asta,'']= 'From'
+    df.at[yuno+22+14*asta,'Octant ID'] = "Count"  
+    df.at[yuno+23+14*asta,'Octant ID']=  -4
+    df.at[yuno+24+14*asta,'Octant ID']= -3
+    df.at[yuno+25+14*asta,'Octant ID']= -2
+    df.at[yuno+26+14*asta,'Octant ID']= -1
+    df.at[yuno+27+14*asta,'Octant ID']=  1
+    df.at[yuno+28+14*asta,'Octant ID']=  2
+    df.at[yuno+29+14*asta,'Octant ID']=  3
+    df.at[yuno+30+14*asta,'Octant ID']=  4
+
+    #transition count
+    for x in range(int(len(df)/mod)+24+14*asta,int(len(df)/mod)+28+14*asta):
+        for y in range(-4,5) :
+                df.at[x,str(y)] = mod_transition_count(df,mod,x-int(len(df)/mod)-28-14*asta,y)
+    for x in range(int(len(df)/mod)+28+14*asta,int(len(df)/mod)+32+14*asta):
+        for y in range(-4,5) :
+                df.at[x,str(y)] = mod_transition_count(df,mod,x-int(len(df)/mod)-27-14*asta,y)
+
+
+    asta = asta + 1
+    midoriya = midoriya - mod
+    
+#saving file
+df.to_excel('output_octant_transition_identify.xlsx')
