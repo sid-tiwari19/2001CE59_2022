@@ -45,3 +45,33 @@ df['U-u_avg']=df['U']-df.at[0,'u_avg']
 df['V-v_avg']=df['V']-df.at[0,'v_avg']
 df['W-w_avg']=df['W']-df.at[0,'w_avg']
 
+#applying the function made to categorize the data using .apply function
+df['octant'] = df.apply(lambda x: oct(x['U-u_avg'], x['V-v_avg'], x['W-w_avg']),axis=1)
+
+#making columns for subsequence
+df['Octant_no'] = ''
+df['Longest Subsequence Length'] = ''
+df['Count'] = ''
+
+l = [1,-1,2,-2,3,-3,4,-4] #making a list of all the octants
+l1 = df['octant'].tolist()
+i=0
+for x in l: #finding subsequence for every octant
+    df.at[i,'Octant_no'] = x
+    count = 1
+    temp = 1
+    mx = 0
+    for y in range(len(l1)-1):
+        if x == l1[y] and x == l1[y+1]:
+            temp += 1
+        else:
+            if mx == temp:
+                count += 1
+            elif mx < temp:
+                count = 1
+            mx = max(mx,temp)
+            temp = 1
+    df.at[i,'Longest Subsequence Length'] = mx
+    df.at[i,'Count'] = count
+    i += 1
+
