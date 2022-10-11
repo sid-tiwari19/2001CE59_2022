@@ -64,3 +64,38 @@ df.at[0,'-3'] = df['octant'].value_counts()[-3]
 df.at[0,'4'] = df['octant'].value_counts()[4]
 df.at[0,'-4'] = df['octant'].value_counts()[-4]
 
+#input
+mod = 5000
+df.at[1,'Octant ID']=mod
+
+midoriya = len(df['octant'])
+i=0
+#using a while loop to split the data in the given range
+while(midoriya):
+    temp = mod
+    
+    #for last range we have to take only till last value
+    if midoriya<mod:
+        mod = midoriya
+    x = i*temp
+    y = i*temp+mod - 1
+    
+    #inserting range and their corresponding data
+    df.at[i+2,'Octant ID'] = str(x) +'-'+ str(y) 
+    
+    #making a new dataframe for a choosen range to count octants
+    df1 = df.loc[x:y] 
+
+    #counting octant for the taken range and inserting in the cell
+    df.at[i+2,'-1'] = df1['octant'].value_counts()[-1]
+    df.at[i+2,'1']  = df1['octant'].value_counts()[1]
+    df.at[i+2,'-2'] = df1['octant'].value_counts()[-2]
+    df.at[i+2,'2']  = df1['octant'].value_counts()[2]
+    df.at[i+2,'-3'] = df1['octant'].value_counts()[-3]
+    df.at[i+2,'3'] = df1['octant'].value_counts()[3]
+    df.at[i+2,'-4'] = df1['octant'].value_counts()[-4]
+    df.at[i+2,'4'] = df1['octant'].value_counts()[4]
+
+    i = i + 1
+    midoriya = midoriya - mod
+
