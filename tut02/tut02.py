@@ -99,3 +99,50 @@ while(midoriya):
     i = i + 1
     midoriya = midoriya - mod
 
+#defining a function to get transition count 
+def trans_count(df,hue,huehue):
+    oki=0
+    for i in range(len(df)-1):
+        if df.at[i,'octant'] == hue and df.at[i+1,'octant'] ==huehue:
+            oki = oki+1
+    return oki
+
+
+yuno = int(len(df)/mod)
+df.at[yuno+6,'Octant ID'] = 'Overall Transition Count'
+df.at[yuno+7,'Octant ID'] =  'to'
+df.at[yuno+8,'1']=  1
+df.at[yuno+8,'-1']= -1
+df.at[yuno+8,'2']=   2
+df.at[yuno+8,'-2']= -2
+df.at[yuno+8,'3']=   3
+df.at[yuno+8,'-3']= -3
+df.at[yuno+8,'4']=   4
+df.at[yuno+8,'-4']= -4
+
+df.at[yuno+9,'']= 'From'
+df.at[yuno+8,'Octant ID'] = "Count"  
+df.at[yuno+9,'Octant ID']=  -4
+df.at[yuno+10,'Octant ID']= -3
+df.at[yuno+11,'Octant ID']= -2
+df.at[yuno+12,'Octant ID']= -1
+df.at[yuno+13,'Octant ID']=  1
+df.at[yuno+14,'Octant ID']=  2
+df.at[yuno+15,'Octant ID']=  3
+df.at[yuno+16,'Octant ID']=  4
+
+#calculating overall transition count
+for x in range(int(len(df)/mod)+9,int(len(df)/mod)+13):
+    for y in range(-4,5) :
+            df.at[x,str(y)] = trans_count(df,x-int(len(df)/mod)-13,y)
+for x in range(int(len(df)/mod)+13,int(len(df)/mod)+17):
+    for y in range(-4,5) :
+            df.at[x,str(y)] = trans_count(df,x-int(len(df)/mod)-12,y)
+            
+            
+
+
+
+midoriya = len(df['octant'])
+asta=1
+
