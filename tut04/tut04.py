@@ -75,3 +75,35 @@ for x in l: #finding subsequence for every octant
     df.at[i,'Count'] = count
     i += 1
 
+#finding out the time for the longest subsequences
+i=0
+j=0
+df[''] = ''
+df['Octant_no.'] = ''
+df['Longest Subsequence Length_'] = ''
+df['count'] = ''
+for x in l:
+    t1 = df.at[i,'Longest Subsequence Length']
+    df.at[j,'Octant_no.'] = df.at[i,'Octant_no']
+    df.at[j,'Longest Subsequence Length_'] = df.at[i,'Longest Subsequence Length']
+    df.at[j,'count'] = df.at[i,'Count']
+    j += 1
+    df.at[j,'Octant_no.'] = 'Time'
+    df.at[j,'Longest Subsequence Length_'] = 'From'
+    df.at[j,'count'] = 'To'
+    j += 1
+    temp = 1
+    for y in range(len(l1)-1):
+        if x == l1[y] and x == l1[y+1]:
+            temp += 1
+        elif temp == df.at[i,'Longest Subsequence Length']:
+            df.at[j,'Longest Subsequence Length_'] = df.at[y-temp+1,'Time']
+            df.at[j,'count'] = df.at[y,'Time']
+            j += 1
+            temp = 1
+        else:
+            temp = 1
+    i += 1
+
+#saving final file
+df.to_excel('output_octant_longest_subsequence_with_range.xlsx')
