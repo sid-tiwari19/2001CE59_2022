@@ -163,6 +163,8 @@ for i in range(1,5):
             df.at[jon+6+int(len(df)/mod),'3'] = 0
         jon = jon+1
 
+df.at[1,'Rank1_Octant_ID'] = ''
+
         
 #saving the output 
 df.to_excel("octant_output_ranking_excel.xlsx")
