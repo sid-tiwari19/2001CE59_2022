@@ -99,3 +99,26 @@ while(size):
     size = size - mod
 
 
+#dictionary for octant name
+oct_D = {'1':'Internal outward interaction','-1':'External outward interaction','2':'External Ejection','-2':'Internal Ejection','3':'External inward interaction','-3':'Internal inward interaction','4':'Internal sweep','-4':'External sweep'}
+
+#count list
+l = []
+for i in range(-4,0):
+    l.append(df.at[0,str(i)])
+for i in range(1,5):
+    l.append(df.at[0,str(i)])
+l.sort()
+
+#ranking of counts
+jon = 8
+for i in range(len(l)):
+    df.at[0,'rank'+(df == l[i]).idxmax(axis=1)[0]] = jon
+    jon = jon-1
+#highest count octant
+df.at[0,'Rank1_Octant_ID'] = int((df == l[7]).idxmax(axis=1)[0])
+df.at[1,'Rank1_Octant_ID'] = int(0)
+#rank octant name
+df.at[0,'Rank1 Octant Name'] = oct_D[(df == l[7]).idxmax(axis=1)[0]]
+
+
