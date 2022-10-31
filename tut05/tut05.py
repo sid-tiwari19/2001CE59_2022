@@ -122,3 +122,47 @@ df.at[1,'Rank1_Octant_ID'] = int(0)
 df.at[0,'Rank1 Octant Name'] = oct_D[(df == l[7]).idxmax(axis=1)[0]]
 
 
+#count l in ascending order
+for snow in range(2,int(len(df)/mod)+2):
+      
+    l = []
+    for i in range(-4,0):
+        l.append(df.at[snow,str(i)])
+    for i in range(1,5):
+        l.append(df.at[snow,str(i)])
+    l.sort()
+    jon = 8
+    for i in range(len(l)):
+        df.at[snow,'rank'+(df == l[i]).idxmax(axis=1)[snow]] = jon
+        jon = jon-1
+    #highest count octant
+    df.at[snow,'Rank1_Octant_ID'] = int((df == l[7]).idxmax(axis=1)[snow])
+    #octant name
+    df.at[snow,'Rank1 Octant Name'] = oct_D[(df == l[7]).idxmax(axis=1)[snow]]
+
+
+#rank1 values count
+df.at[6+int(len(df)/mod),'1'] = 'Octant ID'
+df.at[6+int(len(df)/mod),'2'] = 'Octant Name'
+df.at[6+int(len(df)/mod),'3'] = 'Count of rank1 mod values'
+jon = 1
+for i in range(-4,0):
+        df.at[jon+6+int(len(df)/mod),'1'] = i
+        df.at[jon+6+int(len(df)/mod),'2'] = oct_D[str(i)]
+        try :
+          df.at[jon+6+int(len(df)/mod),'3'] = df['Rank1_Octant_ID'].value_counts()[int(i)]
+        except :
+            df.at[jon+6+int(len(df)/mod),'3'] = 0
+        jon = jon+1
+for i in range(1,5):
+        df.at[jon+6+int(len(df)/mod),'1'] = i
+        df.at[jon+6+int(len(df)/mod),'2'] = oct_D[str(i)]
+        try :
+          df.at[jon+6+int(len(df)/mod),'3'] = df['Rank1_Octant_ID'].value_counts()[int(i)]
+        except :
+            df.at[jon+6+int(len(df)/mod),'3'] = 0
+        jon = jon+1
+
+        
+#saving the output 
+df.to_excel("octant_output_ranking_excel.xlsx")
