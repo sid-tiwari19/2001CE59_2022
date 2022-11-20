@@ -569,3 +569,217 @@ def sOc(t_c, outs):
 
 
 
+def soorc(outs, mod, t_c):
+    hd = ["Octant ID",1,-1,2,-2,3,-3,+4,-4,"Rank Octant 1", "Rank Octant -1","Rank Octant 2","Rank Octant -2","Rank Octant 3","Rank Octant -3","Rank Octant 4","Rank Octant -4","Rank1 Octant ID","Rank1 Octant Name"]
+
+    tRows = t_c//mod+1+1 # header + overall
+    if t_c%mod!=0:
+        tRows+=1
+
+    for i, header in enumerate(hd):
+        for j in range(tRows):
+            outs.cell(row=3+j, column = 14+i).border = black_border
+
+    for i, header in enumerate(hd):
+        outs.cell(row=3, column = i+14).value = header
+
+    outs.cell(row=4, column = 13).value = "Mod " + str(mod)
+
+    sOc(t_c, outs)
+
+# Method based on if-else to return octant type
+def g_o(x,y,z):
+    if(x>=0 and y>=0):
+        if(z>=0):
+            return 1
+        else:
+            return -1
+    
+    if(x<0 and y>=0):
+        if(z>=0):
+            return 2
+        else:
+            return -2
+
+    if(x<0 and y<0):
+        if(z>=0):
+            return 3
+        else:
+            return -3
+
+    if(x>=0 and y<0):
+        if(z>=0):
+            return 4
+        else:
+            return -4
+
+
+
+
+
+def spdwo(u_avg, v_avg, w_avg, t_c, iS, outs):
+    start = 2
+    time = iS.cell(start, 1).value
+
+    # Iterating through out the sheet
+    while(time!=None):
+        # Calculating processed data
+        try:
+            u1 = iS.cell(start, 2).value - u_avg
+            v1 = iS.cell(start, 3).value - v_avg
+            w1 = iS.cell(start, 4).value - w_avg
+            
+            u1 = round(u1,3)
+            v1 = round(v1,3)
+            w1 = round(w1,3)
+
+            oct = g_o(u1, v1, w1)
+        except FileNotFoundError:
+            print("Input file not found!!")
+            exit()
+        except ValueError:
+            print("Row or column values must be at least 1 ")
+            exit()
+
+        # Setting processed data
+        try:
+            outs.cell(row=start+1, column=8).value = u1
+            outs.cell(row=start+1, column=9).value = v1
+            outs.cell(row=start+1, column=10).value = w1
+            outs.cell(row=start+1, column=11).value = oct
+        except FileNotFoundError:
+            print("Output file not found!!")
+            exit()
+        except ValueError:
+            print("Row or column values must be at least 1 ")
+            exit()
+
+        start = start+1
+        try:
+            time = iS.cell(start, 1).value
+        except FileNotFoundError:
+            print("Input file not found!!")
+            exit()
+        except ValueError:
+            print("Row or column values must be at least 1 ")
+            exit()
+
+
+
+
+
+def sid(input_file_name, outs):
+	iF = openpyxl.load_workbook(input_file_name)
+	iS = iF.active
+
+	start = 2
+	time = iS.cell(start, 1).value
+
+    # Variables to store sum variable
+	u_sum = 0 
+	v_sum = 0
+	w_sum = 0
+
+	# Iterating complete file till time value is not None
+	while(time!=None):
+		try:
+			u_sum += float(iS.cell(start, 2).value)
+			v_sum += float(iS.cell(start, 3).value)
+			w_sum += float(iS.cell(start, 4).value)
+		except ValueError:
+			print("Sheet input can't be converted to float!!")
+			exit()
+		except TypeError:
+			print("Sheet doesn't contain valid float input!!")
+			exit()
+
+		try:
+			# Setting input time,u,v,w values
+			outs.cell(row=start+1, column=1).value = iS.cell(start, 1).value 
+			outs.cell(row=start+1, column=2).value = iS.cell(start, 2).value 
+			outs.cell(row=start+1, column=3).value = iS.cell(start, 3).value 
+			outs.cell(row=start+1, column=4).value = iS.cell(start, 4).value 
+		except FileNotFoundError:
+			print("File not found!!")
+			exit()
+		except ValueError:
+			print("Row or column values must be at least 1 ")
+			exit()
+
+		start = start+1
+		time = iS.cell(start, 1).value
+
+	# Setting total count
+	t_c = start-2 # -1 for header and -1 for last None
+	# Calculating average
+	try:
+		u_avg = round(u_sum/t_c, 3)
+		v_avg = round(v_sum/t_c, 3)
+		w_avg = round(w_sum/t_c, 3)
+	except ZeroDivisionError:
+		print("No input data found!!\nDivision by zero occurred!")
+		exit()
+
+	# Setting average values
+	try:
+		outs.cell(row=3, column=5).value = u_avg
+		outs.cell(row=3, column=6).value = v_avg
+		outs.cell(row=3, column=7).value = w_avg
+	except FileNotFoundError:
+		print("Output file not found!!")
+		exit()
+	except ValueError:
+		print("Row or column values must be at least 1 ")
+		exit()
+
+	# Processing input
+	spdwo(u_avg, v_avg, w_avg, t_c, iS, outs)
+
+	return t_c
+
+
+
+
+def ep(iF, mod):
+	fN = iF.split("\\")[-1]
+	fN = fN.split(".xlsx")[0]
+	ofN = "output/" + fN + "_octant_analysis_mod_" + str(mod) + ".xlsx"
+
+	oF = openpyxl.Workbook()
+	outs = oF.active
+
+	outs.cell(row=1, column=14).value = "Overall Octant Count"
+	outs.cell(row=1, column=24).value = "Rank #1 Should be highlighted Yellow"
+	outs.cell(row=1, column=35).value = "Overall Transition Count"
+	outs.cell(row=1, column=45).value = "Longest Subsequence Length"
+	outs.cell(row=1, column=49).value = "Longest Subsequence Length with Range"
+	outs.cell(row=2, column=36).value = "To"
+
+	hd = ["T", "U", "V", "W", "U Avg", "V Avg", "W Avg", "U'=U - U avg", "V'=V - V avg","W'=W - W avg", "Octant"]
+	for i, header in enumerate(hd):
+		outs.cell(row=2, column=i+1).value = header
+
+	t_c = sid(iF, outs)
+	soorc(outs, mod, t_c)
+	set_mod_count(outs, mod, t_c)
+	sotc(outs, t_c)
+	smotc(outs, mod, t_c)
+	fls(outs, t_c)
+
+	oF.save(ofN)
+
+
+
+
+def oa(mod=5000):
+	path = os.getcwd()
+	csv_files = glob.glob(os.path.join(path + "\input", "*.xlsx"))
+	
+	for file in csv_files:
+		ep(file, mod)
+mod=5000
+oa(mod)
+
+#This shall be the last lines of the code.
+end_time = datetime.now()
+print('Duration of Program Execution: {}'.format(end_time - start_time))
