@@ -285,3 +285,287 @@ def tcf(row, T_c, outs):
 
 
 
+def smotc(outs, mod, t_c):
+	# Counting partitions w.r.t. mod
+    try:
+        totP = t_c//mod
+    except ZeroDivisionError:
+        print("Mod can't have 0 value")
+        exit()
+
+    # Checking mod value range
+    if(mod<0):
+        raise Exception("Mod value should be in range of 1-30000")
+
+    if(t_c%mod!=0):
+        totP +=1
+
+    # Initializing row start for data filling
+    rS = 16
+
+    # Iterating all partitions 
+    for i in range (0,totP):
+        # Initializing start and end values
+        start = i*mod
+        end = min((i+1)*mod-1, t_c-1)
+
+        # Setting start-end values
+        try:
+            outs.cell(column=35, row=rS-1 + 13*i).value = "Mod Transition Count"
+            outs.cell(column=35, row=rS + 13*i).value = str(start) + "-" + str(end)
+        except FileNotFoundError:
+            print("Output file not found!!")
+            exit()
+        except ValueError:
+            print("Row or column values must be at least 1 ")
+            exit()
+
+        # Initializing empty dictionary
+        tCou = {}
+        for a in range (1,5):
+            for b in range(1,5):
+                tCou[str(a)+str(b)]=0
+                tCou[str(a)+str(-b)]=0
+                tCou[str(-a)+str(b)]=0
+                tCou[str(-a)+str(-b)]=0
+                
+        # Counting transition for range [start, end)
+        for a in range(start, end+1):
+            try:
+                crnt = outs.cell(column=11, row=a+3).value
+                next = outs.cell(column=11, row=a+4).value
+            except FileNotFoundError:
+                print("Output file not found!!")
+                exit()
+            except ValueError:
+                print("Row or column values must be at least 1 ")
+                exit()
+
+            # Incrementing count for within range value
+            if(next!=None):
+                tCou[str(crnt) + str(next)]+=1
+
+        # Setting transition counts
+        tcf(rS + 13*i, tCou, outs)
+
+
+
+
+
+
+def sotc(outs, t_c):
+	# Initializing empty dictionary
+    c_T = {}
+    for i in range (1,5):
+        for j in range(1,5):
+            c_T[str(i)+str(j)]=0
+            c_T[str(i)+str(-j)]=0
+            c_T[str(-i)+str(j)]=0
+            c_T[str(-i)+str(-j)]=0
+        
+    # Iterating octants values to fill dictionary
+    start = 0
+
+    # try and except block for string to int conversion
+    try:
+        last = int(outs["K3"].value)
+    except ValueError:
+        print("Sheet input can't be converted to int")
+        exit()
+    except TypeError:
+        print("Sheet doesn't contain integer octant")
+        exit()
+
+    while(start<t_c-1):
+        # try and except block for string to int conversion
+        try:
+            crnt = int(outs.cell(row= start+4, column=11).value)
+            c_T[str(last) + str(crnt)]+=1
+            last = crnt
+        except ValueError:
+            print("Sheet input can't be converted to int")
+            exit()
+        except TypeError:
+            print("Sheet doesn't contain integer octant")
+            exit()
+
+        start += 1
+    
+    # Setting transitions counted into sheet
+    tcf(2, c_T, outs)
+
+
+
+
+
+
+def src(row,countMap, outs):
+    # Copying the count list to sort
+    sorC = []
+    count = []
+    for label in o_s:
+        count.append(countMap[label])
+
+    for ct in count:
+        sorC.append(ct)
+
+    sorC.sort(reverse=True)
+
+    rank = []
+
+    for i, el in enumerate(count):
+        for j, ell in enumerate(sorC):
+            if(ell==el):
+                rank.append(j+1)
+                sorC[j] = -1
+                break
+    r1O = -10
+
+    for j in range(0,8):
+        outs.cell(row = row, column=23+j).value = rank[j]
+        if(rank[j]==1):
+            r1O = o_s[j]
+            outs.cell(row = row, column=23+j).fill = yellow_bg    
+
+    outs.cell(row=row , column=31).value = r1O
+    outs.cell(row=row , column=32).value = onim[r1O]
+
+
+
+
+
+def oorf(la_row, outs):
+    count = {-1:0, 1:0, -2:0, 2:0, -3:0, 3:0, -4:0, 4:0}
+
+    row =4
+    while outs.cell(row=row, column=29).value is not None:
+        oct = int(outs.cell(row=row, column=31).value)
+        count[oct]+=1
+        row+=1
+
+    for i in range(9):
+        for j in range(3):
+            row = la_row+2+i
+            col = 29+j
+            outs.cell(row=row, column = col).border = black_border
+
+    outs.cell(column=29, row=la_row+2).value = "Octant ID"
+    outs.cell(column=30, row=la_row+2).value = "Octant Name "
+    outs.cell(column=31, row=la_row+2).value = "Count of Rank 1 Mod Values"
+
+    for j, oct in enumerate(o_s):
+        outs.cell(column=29, row=la_row+3+j).value = oct
+        outs.cell(column=30, row=la_row+3+j).value = onim[oct]
+        outs.cell(column=31, row=la_row+3+j).value = count[oct]
+
+
+
+
+def set_mod_count(outs, mod, t_c):
+	# Initializing empty dictionary
+    count = {-1:0, 1:0, -2:0, 2:0, -3:0, 3:0, -4:0, 4:0}
+
+    # Variable to store last row
+    la_row = -1
+
+    # Iterating loop to set count dictionary
+    start = 0
+    while(start<t_c):
+        try:
+            count[int(outs.cell(row=start+3, column=11).value)] +=1
+        except FileNotFoundError:
+            print("Output file not found!!")
+            exit()
+        except ValueError:
+            print("Row or column values must be at least 1 ")
+            exit()
+
+        start+=1
+        try:
+            if(start%mod==0):
+                # Setting row data
+                try:
+                    row = 4 + start//mod
+                    la_row = row
+                    outs.cell(row=row, column=14).value = str(start-mod) + "-" + str(min(t_c, start-1))
+
+                    for i, label in enumerate(o_s):
+                        outs.cell(row=row, column=15+i).value = count[label]
+
+                    src(row,count, outs)
+                except FileNotFoundError:
+                    print("Output file not found!!")
+                    exit()
+                except ValueError:
+                    print("Row or column values must be at least 1 ")
+                    exit()
+
+                # Reset count values
+                count = {-1:0, 1:0,  -2:0, 2:0, -3:0, 3:0, -4:0, 4:0}
+        except ZeroDivisionError:
+            print("Mod can't have 0 value")
+            exit()
+    try:
+        if(start%mod!=0):
+            # Setting row data
+            try:
+                row = 5 + start//mod
+                la_row = row
+                outs.cell(row=row, column=14).value = str(start-mod) + "-" + str(min(t_c, start-1))
+                for i, label in enumerate(o_s):
+                    outs.cell(row=row, column=15+i).value = count[label]
+                
+                src(row,count, outs)
+            except FileNotFoundError:
+                print("Output file not found!!")
+                exit()
+            except ValueError:
+                print("Row or column values must be at least 1 ")
+                exit()
+
+    except ZeroDivisionError:
+        print("Mod can't have 0 value")
+        exit()
+
+    if(la_row!=-1):
+        oorf(la_row, outs)
+
+
+
+
+
+
+def sOc(t_c, outs):	
+	# Initializing count dictionary
+    count = {-1:0, 1:0, -2:0, 2:0, -3:0, 3:0, -4:0, 4:0}
+    # Incrementing count dictionary data
+    try:
+        for i in range (3,t_c+3):
+            count[int(outs.cell(column=11, row=i).value)] = count[int(outs.cell(column=11, row=i).value)] +1
+    except FileNotFoundError:
+        print("Output file not found!!")
+        exit()
+    except ValueError:
+        print("Sheet input can't be converted to int or row/colum should be atleast 1")
+        exit()
+    except TypeError:
+        print("Sheet doesn't contact valid octant value!!")
+        exit()
+
+    # Setting data into sheet
+    for i, label in enumerate(o_s):
+        try:
+            outs.cell(row=4, column=i+15).value = count[label]
+        except FileNotFoundError:
+            print("Output file not found!!")
+            exit()
+        except ValueError:
+            print("Row or column values must be at least 1 ")
+            exit()
+
+    src(4, count, outs)
+
+
+
+
+
