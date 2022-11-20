@@ -114,4 +114,118 @@ def one_inn(inn1,bat_pl,bow_pl,s): #making function for one innings
             s2.append([bow_pl[cbow],'','',0,0,0,0,0,0,0])
             cbrow = s2.max_row
 
+        #making different cases for different rules in cricket
+        if sr:
+            crun = 1
+        elif zr:
+            pass
+        else:
+            db = double.findall(t)
+            if db:
+                crun = 2
+            else:
+                fr = four.findall(t)
+                if fr:
+                    crun = 4
+                    if not (by or lby):
+                        s1.cell(row = crow,column = 8).value = s1.cell(row = crow,column = 8).value + 1
+                else:
+                    sx = six.findall(t)
+                    if sx:
+                        crun = 6
+                        s1.cell(row = crow,column = 9).value = s1.cell(row = crow,column = 9).value + 1
+                    else:
+                        tp = triple.findall(t)
+                        if tp:
+                            crun = 3
+        if wbb or nnnb or w2 or w3:
+            cex = 1
+            s2.cell(row = cbrow,column = 6).value = s2.cell(row = cbrow,column = 6).value + 1
+            if wbb:
+                nw = nw + 1
+                s2.cell(row = cbrow,column = 9).value = s2.cell(row = cbrow,column = 9).value + 1 
+            elif w2:
+                nw = nw + 2
+                cex = 2
+                s2.cell(row = cbrow,column = 6).value = s2.cell(row = cbrow,column = 6).value + 1
+                s2.cell(row = cbrow,column = 9).value = s2.cell(row = cbrow,column = 9).value + 2
+            elif w3:
+                nw = nw + 3
+                cex = 3
+                s2.cell(row = cbrow,column = 6).value = s2.cell(row = cbrow,column = 6).value + 2
+                s2.cell(row = cbrow,column = 9).value = s2.cell(row = cbrow,column = 9).value + 3
+            else:
+                nnb = nnb + 1
+                s1.cell(row = crow,column = 7).value = s1.cell(row = crow,column = 7).value + 1
+                s2.cell(row = cbrow,column = 8).value = s2.cell(row = cbrow,column = 8).value + 1
+        else:
+            s1.cell(row = crow,column = 7).value = s1.cell(row = crow,column = 7).value + 1
+            bo = 10*s2.cell(row = cbrow,column = 4).value -int(s2.cell(row = cbrow,column = 4).value)*4 + 1
+            s2.cell(row = cbrow,column = 4).value = int(bo/6)*0.4 + bo*0.1
+        runs = runs + crun + cex
+        if float(ov[0]) < 6.1:
+            ppr = runs
+        if float(ov[0])== int(float(ov[0])):
+            if orun == runs:
+                s2.cell(row = cbrow,column = 5).value = s2.cell(row = cbrow,column = 5).value + 1
+        ot = out.findall(t)
+        ct = caught.findall(t)
+        lw = lbw.findall(t)
+        bw = bowled.findall(t)
+        ctu = caught.finditer(t)
+        ro = run_out.findall(t)
+        for i in ctu:
+            capl = i.group(1)
+        if ot:
+            wickets = wickets + 1
+            if not ro:
+                s2.cell(row = cbrow,column = 7).value = s2.cell(row = cbrow,column = 7).value + 1
+            if wickets != 1:
+                s3['A2'] = str(s3['A2'].value) + ', ' + str(runs) + '-' + str(wickets) + ' (' + bat_pl[cbat] + ', ' + ov[0] + ')'
+            else:
+                s3['A2'] = str(runs) + '-' + str(wickets) + '(' + bat_pl[cbat] + ', ' + ov[0] + ')'
+            if ct:
+                s1.cell(row = crow,column = 2).value = 'c ' + bow_pl[capl] + ' b ' + bow_pl[cbow]
+            elif lw:
+                s1.cell(row = crow,column = 2).value = 'lbw b ' + bow_pl[cbow]
+            elif bw:
+                s1.cell(row = crow,column = 2).value = 'b ' + bow_pl[cbow]
+            elif ro:
+                s1.cell(row = crow,column = 2).value = 'run out (' + bow_pl[cbow] + ')'
+            
+        #filling in excel
+        s1['I1'] = str(runs)+'-'+str(wickets)+'('+ov[0]+' Ov)'
         
+        if not (by or lby):
+            s1.cell(row = crow,column = 6).value = s1.cell(row = crow,column = 6).value + crun
+            s2.cell(row = cbrow,column = 6).value = s2.cell(row = cbrow,column = 6).value + crun
+        else:
+            if by:
+                if fr:
+                    nb = nb + 4
+                elif db:
+                    nb = nb + 2
+                elif tp:
+                    nb = nb + 3
+                elif sr:
+                    nb = nb + 1
+            else:
+                if sr:
+                    nlb = nlb + 1
+                elif fr:
+                    nlb = nlb + 4
+                elif db:
+                    nlb = nlb + 2
+                elif tp:
+                    nlb = nlb + 3
+            
+
+        s1.cell(row = crow,column = 10).value = float("{:.2f}".format((s1.cell(row = crow,column = 6).value)*100/s1.cell(row = crow,column = 7).value))
+        ovf = (10*s2.cell(row = cbrow,column = 4).value - 4*int(s2.cell(row = cbrow,column = 4).value))/6
+        if ovf:
+            s2.cell(row = cbrow,column = 10).value = float("{:.2f}".format(s2.cell(row = cbrow,column = 6).value/ovf))
+        t = inn1.readline()
+        if not t:
+            break
+
+    
