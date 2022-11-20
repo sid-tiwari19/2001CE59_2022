@@ -228,4 +228,49 @@ def one_inn(inn1,bat_pl,bow_pl,s): #making function for one innings
         if not t:
             break
 
+    #formatting cells
+    s1.merge_cells(start_row=1, start_column=1, end_row=1, end_column=8)
+    s1.merge_cells(start_row=1, start_column=9, end_row=1, end_column=10)
+    crow = s1.max_row + 1
+    s1.merge_cells(start_row=crow, start_column=5, end_row=crow, end_column=7)
+
+    s1.append(['Extras','','','','','','',str(nb + nlb + nw + nnb)+'(b '+str(nb)+', lb '+str(nlb)+', w '+str(nw)+', nb '+str(nnb)+', p 0)'])
+    s1.merge_cells(start_row=crow+1, start_column=5, end_row=crow+1, end_column=7)
+    s1.append(['Total','','','','','','',str(runs)+'('+str(wickets)+' wkts, '+ov[0]+' Ov)'])
     
+    s2.append([])
+    s2.append(['Powerplays','Overs','','','','','','','Runs'])
+    s2.append(['Mandotary','0.1-6','','','','','','',ppr])
+
+    #combining data
+    mc1 = s1.max_column
+    mc2 = s2.max_column
+    mc3 = s3.max_column
+    mr1 = s1.max_row
+    mr2 = s2.max_row
+    mr3 = s3.max_row
+
+
+    for i in range(1,mr1-3):
+        s1.merge_cells(start_row=i+1, start_column=2, end_row=i+1, end_column=5)
+    for i in range(1,mr3+1):
+        for j in range(1,9):
+            s1.cell(row = mr1+i+1,column=j).value = s3.cell(row = i,column=j).value
+
+    mr11 = s1.max_row
+    for i in range(1,mr2+1):
+        for j in range(1,11):
+            s1.cell(row = mr11+i+3,column=j).value = s2.cell(row = i,column=j).value
+
+    #few more formatting
+    s1.merge_cells(start_row=mr1 + 2, start_column=1, end_row=mr1 + 2, end_column=10)
+    s1.merge_cells(start_row=mr1 + 3, start_column=1, end_row=mr1 + 5, end_column=10)
+    s1.cell(row = mr1+3,column=1).alignment = Alignment(wrap_text=True)
+    mr12 = s1.max_row
+    s1.merge_cells(start_row=mr12 -1, start_column=2, end_row=mr12-1, end_column=8)
+    s1.merge_cells(start_row=mr12, start_column=2, end_row=mr12, end_column=8)
+    s1.merge_cells(start_row=mr12 -1, start_column=9, end_row=mr12-1, end_column=10)
+    s1.merge_cells(start_row=mr12, start_column=9, end_row=mr12, end_column=10)
+
+    return innbat
+
