@@ -201,14 +201,14 @@ def one_inn(inn1,bat_pl,bow_pl,s): #making function for one innings
             s2.cell(row = cbrow,column = 6).value = s2.cell(row = cbrow,column = 6).value + crun
         else:
             if by:
-                if fr:
+                if sr:
+                    nb = nb + 1
+                elif fr:
                     nb = nb + 4
                 elif db:
                     nb = nb + 2
                 elif tp:
                     nb = nb + 3
-                elif sr:
-                    nb = nb + 1
             else:
                 if sr:
                     nlb = nlb + 1
